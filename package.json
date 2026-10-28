@@ -1,0 +1,51 @@
+{
+  "name": "css-tint-filter",
+  "version": "0.1.0",
+  "description": "Tint elements by an RGB color with CSS filters.",
+  "keywords": [
+    "css",
+    "filter",
+    "tint",
+    "color",
+    "multiply"
+  ],
+  "homepage": "https://github.com/K-Adam/css-tint-filter#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/K-Adam/css-tint-filter.git"
+  },
+  "license": "MIT",
+  "author": "Adam Kecskes <kecskes.adam@outlook.com>",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/multiplyFilter.d.ts",
+      "default": "./dist/multiplyFilter.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "vite --open",
+    "build:demo": "vite build",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "vitest run",
+    "test:unit": "vitest run --project unit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "git config core.hooksPath .githooks",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@picocss/pico": "^2.1.1",
+    "@vitest/browser-playwright": "^5.0.5",
+    "playwright": "^1.64.1",
+    "prettier": "^3.9.10",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  }
+}

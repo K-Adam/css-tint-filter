@@ -1,0 +1,78 @@
+.github-corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  fill: var(--pico-primary-background);
+}
+
+.github-corner .octo {
+  fill: var(--pico-primary-inverse);
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+  margin-bottom: var(--pico-spacing);
+}
+
+.bar label {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0;
+}
+
+.bar :is(input, select, button) {
+  width: auto;
+  margin: 0;
+}
+
+.bar input[type="color"] {
+  width: 4rem;
+}
+
+.bar input[type="range"] {
+  flex: 1 1 12rem;
+}
+
+#presets {
+  gap: 0.375rem;
+  margin: 0;
+}
+
+#presets button {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+}
+
+.image {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--pico-border-radius);
+  background: var(--image) center / cover;
+}
+
+body {
+  --image: url("./house.jpg");
+}
+
+body.wheel {
+  --image:
+    radial-gradient(circle closest-side, #fff, #fff0 95%),
+    conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
+}
+
+.code {
+  display: flex;
+  gap: 0.5rem;
+  align-items: start;
+}
+
+.code pre {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}

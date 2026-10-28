@@ -1,0 +1,4 @@
+#!/bin/sh
+# Restages whole files, so unstaged hunks in them get committed too
+git diff --cached --name-only --diff-filter=ACMR -z | xargs -0 -r npx prettier --write --ignore-unknown &&
+  git diff --cached --name-only --diff-filter=ACMR -z | xargs -0 -r git add
