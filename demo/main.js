@@ -1,5 +1,6 @@
 import "@picocss/pico";
 import "./style.css";
+import { lerp } from "../src/chain.ts";
 import { multiplyFilter, multiplyKeyframes } from "../src/multiplyFilter.ts";
 
 const $ = (id) => document.getElementById(id);
@@ -37,9 +38,13 @@ for (const hex of ["#ff7359", "#ffd84d", "#59c26b", "#4da3ff", "#b07cff"]) {
   $("presets").append(button);
 }
 $("color").addEventListener("input", tint);
-$("copy").addEventListener("click", () =>
-  navigator.clipboard.writeText($("css").textContent),
-);
+for (const block of document.querySelectorAll(".code")) {
+  block
+    .querySelector("button")
+    .addEventListener("click", () =>
+      navigator.clipboard.writeText(block.querySelector("code").textContent),
+    );
+}
 tint();
 
 // One clock for all three panels: the CSS animations stay paused and every
@@ -66,6 +71,12 @@ function keyframes() {
   ];
   for (const animation of animations) animation.pause();
   $("keyed-caption").textContent = `Fitted keyframes, ${keys.length} keys`;
+  const steps = keys.map(
+    (k) => `  ${+(k.offset * 100).toFixed(2)}% { filter: ${k.filter}; }`,
+  );
+  $("keyframes-css").textContent =
+    `@keyframes tint {\n${steps.join("\n")}\n}\n\n` +
+    `.tinted {\n  animation: tint ${PERIOD / 1000}s linear infinite alternate;\n}`;
 }
 
 function frame(now) {
@@ -74,10 +85,7 @@ function frame(now) {
   last = now;
   const t = time < 1 ? time : 2 - time;
   for (const animation of animations) animation.currentTime = t * PERIOD;
-  $("exact-frame").setAttribute(
-    "values",
-    matrix(from.map((v, i) => v + t * (to[i] - v))),
-  );
+  $("exact-frame").setAttribute("values", matrix(lerp(from, to, t)));
   if (playing) $("time").value = t;
   requestAnimationFrame(frame);
 }

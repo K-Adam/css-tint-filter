@@ -5,16 +5,7 @@ import {
   type Chain,
   type RGB,
 } from "../src/multiplyFilter.ts";
-import { samples, simulate } from "../src/chain.ts";
-
-const identity = {
-  prescale: 1,
-  hueIn: 0,
-  sepia: 0,
-  hueOut: 0,
-  saturate: 1,
-  brightness: 1,
-};
+import { identity, samples, simulate } from "../src/chain.ts";
 
 it("simulates the spec matrices with a clamp per stage", () => {
   expect(simulate(identity, [0.2, 0.5, 0.9])).toEqual([0.2, 0.5, 0.9]);

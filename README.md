@@ -18,6 +18,20 @@ element.style.filter = css;
 // brightness(..) hue-rotate(..rad) sepia(..) hue-rotate(..rad) saturate(..) brightness(..)
 ```
 
+## You may not need this
+
+A tint that doesn't animate is exact with an SVG filter, `filter: url(#tint)`:
+
+```html
+<svg width="0" height="0">
+  <filter id="tint" color-interpolation-filters="sRGB">
+    <feColorMatrix values="1 0 0 0 0  0 0.45 0 0 0  0 0 0.35 0 0  0 0 0 1 0" />
+  </filter>
+</svg>
+```
+
+This package is for tints that animate, alone or alongside other filters.
+
 ## API
 
 | Export                                       | Description                                                                                                                                                                                                                                     |

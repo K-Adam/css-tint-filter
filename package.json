@@ -1,6 +1,6 @@
 {
   "name": "css-tint-filter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Tint elements by an RGB color with CSS filters.",
   "keywords": [
     "css",
@@ -33,7 +33,6 @@
     "build:demo": "vite build",
     "typecheck": "tsc -p tsconfig.test.json",
     "test": "vitest run",
-    "test:unit": "vitest run --project unit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "git config core.hooksPath .githooks",

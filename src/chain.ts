@@ -18,8 +18,17 @@ export const clamp: Store = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 // Some browsers and GPUs keep only 8 bits between filter functions
 export const clamp8: Store = (v) => Math.round(clamp(v) * 255) / 255;
 
-export const lerp = (a: RGB, b: RGB, t: number) =>
-  a.map((v, i) => v + t * (b[i] - v)) as unknown as RGB;
+export const lerp = <T extends readonly number[]>(a: T, b: T, t: number) =>
+  a.map((v, i) => v + t * (b[i] - v)) as unknown as T;
+
+export const identity: Chain = {
+  prescale: 1,
+  hueIn: 0,
+  sepia: 0,
+  hueOut: 0,
+  saturate: 1,
+  brightness: 1,
+};
 
 // Filter Effects 1, shorthand equivalents
 const sepia = (a: number): Matrix => {
@@ -57,26 +66,24 @@ export function throughChain(
   eightBit: boolean,
   out: Float64Array,
 ): void {
+  const k = chain.prescale;
   const stages = [
+    [k, 0, 0, 0, k, 0, 0, 0, k],
     hueRotate(chain.hueIn),
     sepia(chain.sepia),
     hueRotate(chain.hueOut),
     saturate(chain.saturate),
   ];
-  const k = chain.prescale;
   for (let i = 0; i < input.length; i += 3) {
-    let r = k * input[i];
-    let g = k * input[i + 1];
-    let b = k * input[i + 2];
-    for (let j = -1; j < stages.length; j++) {
-      if (j >= 0) {
-        const m = stages[j];
-        const R = m[0] * r + m[1] * g + m[2] * b;
-        const G = m[3] * r + m[4] * g + m[5] * b;
-        b = m[6] * r + m[7] * g + m[8] * b;
-        r = R;
-        g = G;
-      }
+    let r = input[i];
+    let g = input[i + 1];
+    let b = input[i + 2];
+    for (const m of stages) {
+      const R = m[0] * r + m[1] * g + m[2] * b;
+      const G = m[3] * r + m[4] * g + m[5] * b;
+      b = m[6] * r + m[7] * g + m[8] * b;
+      r = R;
+      g = G;
       r = r < 0 ? 0 : r > 1 ? 1 : r;
       g = g < 0 ? 0 : g > 1 ? 1 : g;
       b = b < 0 ? 0 : b > 1 ? 1 : b;

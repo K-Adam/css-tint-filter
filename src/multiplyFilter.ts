@@ -1,6 +1,7 @@
 import {
   clamp,
   clamp8,
+  identity,
   lerp,
   samples,
   throughChain,
@@ -45,7 +46,7 @@ function rmsAfter(target: RGB, brightness: number, store: Store): number {
 }
 
 // Expects the float pass in outputs. 8 bit stages posterize a tiny prescale.
-function lossAfterFloat(target: RGB, chain: Chain, brightness: number): number {
+function worstLoss(target: RGB, chain: Chain, brightness: number): number {
   const float = rmsAfter(target, brightness, clamp);
   throughChain(chain, inputs, true, outputs);
   return Math.max(float, rmsAfter(target, brightness, clamp8));
@@ -53,7 +54,7 @@ function lossAfterFloat(target: RGB, chain: Chain, brightness: number): number {
 
 function chainError(target: RGB, chain: Chain): number {
   throughChain(chain, inputs, false, outputs);
-  return lossAfterFloat(target, chain, chain.brightness);
+  return worstLoss(target, chain, chain.brightness);
 }
 
 // Unbounded search coordinates, so the simplex never sits on a clamped wall
@@ -106,7 +107,7 @@ function fitBrightness(
   const brightness = yy ? ty / yy : 0;
   return {
     chain: { ...chain, brightness },
-    loss: lossAfterFloat(target, chain, brightness),
+    loss: worstLoss(target, chain, brightness),
   };
 }
 
@@ -121,8 +122,6 @@ function nelderMead(
     start,
     ...start.map((_, i) => start.map((v, j) => v + (i === j ? 0.3 : 0))),
   ].map(vertex);
-  const at = (a: number[], b: number[], t: number) =>
-    a.map((v, i) => v + t * (b[i] - v));
   for (let iter = 0; iter < iterations; iter++) {
     simplex.sort((a, b) => a.f - b.f);
     const best = simplex[0];
@@ -131,7 +130,7 @@ function nelderMead(
     const centroid = start.map(
       (_, i) => simplex.slice(0, n).reduce((s, p) => s + p.x[i], 0) / n,
     );
-    const point = (t: number) => vertex(at(centroid, worst.x, t));
+    const point = (t: number) => vertex(lerp(centroid, worst.x, t));
     const reflected = point(-1);
     if (reflected.f < best.f) {
       const expanded = point(-2);
@@ -143,7 +142,7 @@ function nelderMead(
       if (contracted.f < worst.f) simplex[n] = contracted;
       else
         simplex = simplex.map((p) =>
-          p === best ? p : vertex(at(best.x, p.x, 0.5)),
+          p === best ? p : vertex(lerp(best.x, p.x, 0.5)),
         );
     }
   }
@@ -152,15 +151,6 @@ function nelderMead(
 }
 
 const round = (v: number) => Number(v.toFixed(4));
-
-const identity: Chain = {
-  prescale: 1,
-  hueIn: 0,
-  sepia: 0,
-  hueOut: 0,
-  saturate: 1,
-  brightness: 1,
-};
 
 const withCss = (target: RGB, chain: Chain): MultiplyFilter => ({
   ...chain,
